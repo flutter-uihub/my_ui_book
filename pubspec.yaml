@@ -21,6 +21,7 @@ dependencies:
   june_flow_util:
   keyboard_attachable:
   modal_bottom_sheet:
+  request_ad_permission_page_ui: ^1.0.0+1
   styled_widget:
   tuple: ^2.0.2
   url_launcher: ^6.3.0
@@ -36,5 +37,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/uihub/request_ad_permission_page_ui/
     - assets/pubdev.svg
     - assets/github.svg

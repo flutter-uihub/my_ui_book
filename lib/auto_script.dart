@@ -5,7 +5,7 @@ void main() async {
   String filePath = 'lib/app/widgets.dart';
   String existingCode = await File(filePath).readAsString();
 
-  String directoryPath = 'lib/widget_book';
+  String directoryPath = 'lib/uihub';
   var result = collectFolderInfo(directoryPath);
   var code = generateCode(result, existingCode);
   // print(result);
@@ -25,7 +25,7 @@ List<Tuple2<String, String>> collectFolderInfo(String directoryPath) {
   List<FileSystemEntity> entities = directory.listSync(recursive: true);
   Map<String, String> folderMap = {};
 
-  // Check each folder for 'usage.dart' or '_/_.dart' with 'class NewView'
+  // Check each folder for 'main.dart' with 'class NewView'
   for (var entity in entities) {
     if (entity is File) {
       String fileName = entity.path.split('/').last;
@@ -34,11 +34,9 @@ List<Tuple2<String, String>> collectFolderInfo(String directoryPath) {
       String topFolderName = relativePath.split('/').first;
 
       if (!topFolderName.startsWith('_new')) {
-        if (fileName == 'usage.dart') {
-          folderMap[topFolderName] = 'usage';
-        } else if (fileName == '_.dart') {
+        if (fileName == 'main.dart') {
           String content = entity.readAsStringSync();
-          if (content.contains('class NewView') && folderMap[topFolderName] != 'usage') {
+          if (content.contains('class NewView')) {
             folderMap[topFolderName] = 'newview';
           }
         }
@@ -58,7 +56,7 @@ String generateCode(List<Tuple2<String, String>> folderInfo, String existingCode
   Set<String> newImports = {};
   List<String> existingWidgets = [];
   List<String> newWidgets = [];
-  Set<String> processedFolders = {}; // To track folders that already have 'usage' or 'newview'
+  Set<String> processedFolders = {}; // To track folders that already have 'newview'
 
   // 기존 코드에서 import 구문과 widgets 리스트를 추출
   var importRegex = RegExp(r"import\s+'([^']+)' as (\w+);");
@@ -74,7 +72,7 @@ String generateCode(List<Tuple2<String, String>> folderInfo, String existingCode
 
     imports.add(importLine);
 
-    if (importPath.endsWith('_/_.dart') || importPath.endsWith('usage.dart')) {
+    if (importPath.endsWith('main.dart')) {
       String folderName = importPath.split('/')[2]; // Extract folder name from import path
       processedFolders.add(folderName);
     }
@@ -96,16 +94,9 @@ String generateCode(List<Tuple2<String, String>> folderInfo, String existingCode
       continue;
     }
 
-    if (type == 'usage') {
-      importLine = "import '../../widget_book/$folderName/usage.dart' as $asName;";
-      if (!imports.any((import) => import.contains("$folderName/usage.dart"))) {
-        newImports.add(importLine);
-        newWidgets.add("Tuple2('$folderName', $asName.Usage())");
-        processedFolders.add(folderName); // Mark folder as processed
-      }
-    } else if (type == 'newview') {
-      importLine = "import '../../widget_book/$folderName/_/_.dart' as $asName;";
-      if (!imports.any((import) => import.contains("$folderName/_/_.dart"))) {
+    if (type == 'newview') {
+      importLine = "import '../../uihub/$folderName/main.dart' as $asName;";
+      if (!imports.any((import) => import.contains("$folderName/main.dart"))) {
         newImports.add(importLine);
         newWidgets.add("Tuple2('$folderName', $asName.NewView())");
         processedFolders.add(folderName); // Mark folder as processed

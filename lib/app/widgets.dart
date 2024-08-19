@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../widget_book/hello_world_page_lego/_/_.dart' as hello_world_page_lego;
+import '../../uihub/request_ad_permission_page_ui/main.dart' as request_ad_permission_page_ui;
+
 
 final List<Tuple2<String, Widget>> widgets = [
-  Tuple2('hello_world_page_lego', hello_world_page_lego.NewView())
+  Tuple2('request_ad_permission_page_ui', request_ad_permission_page_ui.NewView()),
+  
 ];
